@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NewBe举重辛克莱系数计算器</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background-color: #f4f4f4;
+      }
+      .container {
+        width: 90%;
+        max-width: 400px;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        background-color: #fff;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        text-align: center;
+        color: #333;
+        font-size: 1.5em; /* 小一号标题 */
+        margin-bottom: 20px;
+      }
+      label {
+        display: block;
+        margin: 10px 0 5px;
+        font-weight: bold;
+        color: #555;
+      }
+      input[type="number"],
+      select {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+      }
+      button {
+        width: 100%;
+        padding: 12px;
+        background-color: #ffa500; /* 橘黄色按钮 */
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+      button:hover {
+        background-color: #e59400; /* 悬停时更深的橘黄色 */
+      }
+      .result {
+        margin-top: 20px;
+        padding: 15px;
+        background-color: #e9ecef;
+        border-radius: 5px;
+        text-align: center;
+        font-size: 1.2em;
+        color: #333;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- 修改标题 -->
+      <h1>NewBe举重辛克莱系数计算器</h1>
+
+      <!-- 性别选择 -->
+      <label for="gender">性别:</label>
+      <select id="gender">
+        <option value="male">男</option>
+        <option value="female">女</option>
+      </select>
+
+      <!-- 体重输入 -->
+      <label for="weight">体重（公斤）:</label>
+      <input
+        type="number"
+        id="weight"
+        placeholder="请输入体重（公斤）"
+        min="0"
+        step="0.1"
+      />
+
+      <!-- 总成绩输入 -->
+      <label for="total_score">抓举 + 挺举总成绩（公斤）:</label>
+      <input
+        type="number"
+        id="total_score"
+        placeholder="请输入总成绩（公斤）"
+        min="0"
+        step="0.1"
+      />
+
+      <!-- 计算按钮 -->
+      <button onclick="calculateSinclair()">计算辛克莱总成绩</button>
+
+      <!-- 结果显示 -->
+      <div class="result" id="result"></div>
+    </div>
+
+    <script>
+      // IWF最新参数（2021-2024年）
+      const params = {
+        male: { A: 0.722762521, b: 193.609 }, // 男性参数
+        female: { A: 0.787004341, b: 153.757 }, // 女性参数
+      };
+
+      // 计算辛克莱系数
+      function sinclairCoefficient(weight, A, b) {
+        if (weight >= b) {
+          return 1.0;
+        } else {
+          const X = Math.log10(weight / b);
+          return Math.pow(10, A * Math.pow(X, 2));
+        }
+      }
+
+      // 计算辛克莱总成绩
+      function calculateSinclair() {
+        // 获取输入值
+        const gender = document.getElementById("gender").value;
+        const weight = parseFloat(document.getElementById("weight").value);
+        const totalScore = parseFloat(
+          document.getElementById("total_score").value
+        );
+
+        // 检查输入是否有效
+        if (
+          isNaN(weight) ||
+          isNaN(totalScore) ||
+          weight <= 0 ||
+          totalScore <= 0
+        ) {
+          document.getElementById("result").innerText = "请输入有效的数值！";
+          return;
+        }
+
+        // 获取性别对应的参数
+        const { A, b } = params[gender];
+
+        // 计算辛克莱系数和总成绩
+        const coefficient = sinclairCoefficient(weight, A, b);
+        const sinclairScore = totalScore * coefficient;
+
+        // 显示结果
+        document.getElementById(
+          "result"
+        ).innerText = `辛克莱总成绩: ${sinclairScore.toFixed(2)}`;
+      }
+    </script>
+  </body>
+</html>
